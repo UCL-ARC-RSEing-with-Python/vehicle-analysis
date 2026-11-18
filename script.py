@@ -24,16 +24,28 @@ if __name__ == "__main__":
     vehicles = []
     for car in cars:
         veh_type = "car"
-        cross_section = 2.2  # 2-2.4 m^2
-        vehicles.append({"type": "car", "Cross Section (m^2)": cross_section, **car})
+        x_section = car["Cross Section (m^2)"]
+        if not (2.0 <= x_section <= 2.4):
+            raise ValueError(
+                f"X-section outside acceptable range (2.0 <= {x_section}! <= 2.4)"
+            )
+        vehicles.append({"type": "car", **car})
     for van in vans:
         veh_type = "van"
-        cross_section = 3.1  # 2.5-4.5 m^2
-        vehicles.append({"type": "van", "Cross Section (m^2)": cross_section, **van})
+        x_section = van["Cross Section (m^2)"]
+        if not (2.5 <= x_section <= 4.5):
+            raise ValueError(
+                f"X-section outside acceptable range (2.5 <= {x_section}! <= 4.0)"
+            )
+        vehicles.append({"type": "van", **van})
     for hgv in hgvs:
         veh_type = "hgv"
-        cross_section = 9.3  # 9.0-10.0 m^2
-        vehicles.append({"type": "hgv", "Cross Section (m^2)": cross_section, **hgv})
+        x_section = hgv["Cross Section (m^2)"]
+        if not (9.0 <= x_section <= 10.0):
+            raise ValueError(
+                f"X-section outside acceptable range (9.0 <= {x_section}! <= 10.0)"
+            )
+        vehicles.append({"type": "hgv", **hgv})
 
     # Find the most valuable vehicle at a given point in time
     t = datetime.now()  # using today as an example, but could be any date
