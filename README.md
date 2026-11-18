@@ -29,3 +29,35 @@ Each sales team then has three files containing these records for all the cars, 
 Note that the columns of the CSV file(s) are not guaranteed to be sorted into any particular order (but all headers will be present in the files).
 
 ## Vehicle Statistics
+
+From the vehicle specifications, certain other characteristics of a vehicle can be derived.
+
+### Theoretical Top Speed
+
+All vehicles achieve their theoretical top speed when their engine's power output balances the drag forces resisting their movement.
+Mathematically, theoretical top speed can be approximated by
+
+$$\text{top speed} = \sqrt[3]{\frac{2 P}{\rho \times A \times C_{\mathrm{drag}}}},$$
+
+where
+
+- $P$ is the vehicle's Engine Power,
+- $\rho = 1.225 \mathrm{kg}\mathrm{m}^3$ is the density of air,
+- $C_{\mathrm{drag}}$ is the vehicle's Drag Coefficient,
+- $A$ is the vehicle's front-facing cross-section.
+
+### Current Valuation
+
+Vehicle value degrades rapidly over time, however not all types of vehicle have the same rate of devaluation.
+If we let
+
+- $R$ denote the RRP of a vehicle when it was assembled, and
+- $t$ be the time **in years** since the vehicle's assembly date,
+
+then the current value $V$ (in £1000) of each type of vehicle can be estimated as:
+
+- For cars; $V = R \times 2^{-t} = \frac{R}{2^t}$.
+  Essentially, a car looses half it's value for every full year since it's assembly.
+- For vans; $V = R \times 1.6^{-t} = \frac{R}{1.6^t}$. Vans degrade in the same manner as cars, but at a slower rate (only loosing $\approx\frac{3}{5}$ of their value each year).
+- For HGVs; $V = \frac{R}{1 + 2t^2}$.
+  HGVs rapidly loose value due to the intensity of the work they need to conduct, and changing supply chain demands.

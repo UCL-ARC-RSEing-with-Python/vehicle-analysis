@@ -1,4 +1,4 @@
-Overall plan is for us to encode our vehicles using a template pattern / method.
+Overall plan is for us to encode our vehicles using a template pattern / method (<https://refactoring.guru/design-patterns/template-method>).
 We're also going to make use of dataclasses
 
 - Step 1: create simple dataclasses to represent cars, vans, and hgvs. (They will look similar!)
