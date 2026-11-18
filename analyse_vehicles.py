@@ -26,6 +26,11 @@ if __name__ == "__main__":
     vehicles = []
     for car in cars:
         veh_type = "car"
+        car["plate"] = str(car["plate"]).upper()
+        if not all(char.isalnum() for char in car["plate"]):
+            raise ValueError(f"Plate is non-alphanumeric: {car['plate']}")
+        if len(car["plate"]) != 7:
+            raise ValueError(f"Car plate is not 7-digits long: {car['plate']}")
         x_section = car["Cross Section (m^2)"]
         if not (2.0 <= x_section <= 2.4):
             raise ValueError(
@@ -34,6 +39,11 @@ if __name__ == "__main__":
         vehicles.append({"type": "car", **car})
     for van in vans:
         veh_type = "van"
+        van["plate"] = str(van["plate"]).upper()
+        if not all(char.isalnum() for char in van["plate"]):
+            raise ValueError(f"Plate is non-alphanumeric: {van['plate']}")
+        if len(van["plate"]) != 7:
+            raise ValueError(f"Van plate is not 7-digits long: {van['plate']}")
         x_section = van["Cross Section (m^2)"]
         if not (2.5 <= x_section <= 4.5):
             raise ValueError(
@@ -42,6 +52,11 @@ if __name__ == "__main__":
         vehicles.append({"type": "van", **van})
     for hgv in hgvs:
         veh_type = "hgv"
+        hgv["plate"] = str(hgv["plate"]).upper()
+        if not all(char.isalnum() for char in hgv["plate"]):
+            raise ValueError(f"Plate is non-alphanumeric: {van['plate']}")
+        if len(hgv["plate"]) != 4:
+            raise ValueError(f"HGV plate is not 4-digits long: {van['plate']}")
         x_section = hgv["Cross Section (m^2)"]
         if not (9.0 <= x_section <= 10.0):
             raise ValueError(

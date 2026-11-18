@@ -1,26 +1,31 @@
-Overall plan is for us to encode our vehicles using a template pattern / method.
-We're also going to make use of dataclasses
+# Car Dealership Analysis
 
-- Step 1: create simple dataclasses to represent cars, vans, and hgvs. (They will look similar!)
-  - Post-init for X-section range validation
-  - `value_at_time` method
-  - `top_speed` property
-  - other derived things...
-  - use sensible attribute names, and make sure to document them!!!
-- Step 2: rework the script to make use of the new classes!
-  - Loading no longer needs the vehicle type to be specified
-  - Highest price avoids the `if type[...]` blocks
-  - Both methods can avoid doing the calculation explicitly, can just use the created property / method
-  - Can even now use `sorted` with a suitable `key` argument if you want to be fancy!
-- Step 3: Implement a base class for the template method, `Vehicle`.
-  - cars, vans, and hgvs are all created in the same way, they just have different ranges for the X-section and different degradation formulae
-  - use properties for the values that will change on a per-subclass basis
-  - use ABC to flag the methods & properties that need to be filled in!
-  - `__post_init__` can be implemented on the base class using the abstract properties...
-  - `top_speed` can be directly implemented on the base class as a property
-  - `value_at_time` will need to be an abstract method since it varies for each vehicle type.
-- Step 4: Implement a `Garage` class to help with loading the data.
-  - `Garage` instance starts off without any cars in it
-  - Has 3 methods for "adding" vehicles that are loaded from the csv files (`load_cars`, `load_vans`, etc). Note that this can actually be generalised to `load(veh_class, **info)`...
-  - Provide methods for finding the fastest & most expensive cars, based on the script. (Again this can be generalised to `find_best_by_key(key="price")` etc)
-  - Can add the `forecast_net_worth` function to the class too, refactor it to take the start date, end date, frequency, and whether or not to save! Return the figure created!
+This code-base is distributed by a vehicle manufacturer to its sales teams in their dealership outlets.
+The code is designed to allow the sales teams to extract information such as the net worth of their vehicles, the forecasted degradation in value over time, and commonly-enquired about car properties like top speed and engine power.
+However, in it's current state the code-base is little more than a single script, requiring a lot of implicit knowledge to fully understand.
+
+## Vehicle Specifications
+
+The company manufactures three types of vehicles; cars, vans, and HGVs (Heavy Goods Vehicles - think industrial lorries, trucks, and trains).
+This information is then exported to `.csv` records, with the relevant records being passed to the sales team along with the physical shipment of the vehicle itself.
+All vehicles that are manufactured come with the following information (the text in parenthesis denotes the CSV-column header the information appears under):
+
+- The vehicle's license plate (`"Plate"`).
+  This is a alphanumeric string; for road-vehicles this is typically 7 characters long, and for non-road vehicles typically 4 characters long.
+  Lowercase letters are not used in these strings.
+- Recommended Retail Price (RRP), in £1,000 (`"RRP"`).
+  This is the price at which the manufacturer recommends the vehicle be sold at, when completely new.
+- The date that assembly of the vehicle was completed (`"Manufacture Date"`).
+  This is given as a date in `YYYY-MM-DD` format, though is string-valued inside the CSV file.
+- The power that the vehicle's engine can generate (`"Engine Power"`), which in turn affects it's top speed and acceleration.
+  This value is given in units of $\mathrm{kg} \ \mathrm{m}^2 \mathrm{s}^3$.
+- The vehicle's Drag Coefficient (`"c_drag"`).
+  This is a dimensionless number (a value that doesn't have any units) that appears in various mechanics-related calculations, broadly quantifying how much air resistance and other drag forces affect the vehicle.
+  A higher value corresponds to a greater slowdown effect due to drag.
+- The vehicle's front-facing cross section (`"Cross Section"`), given in $\mathrm{m}^2$.
+  This is another parameter that affects how the vehicle interacts with resistance forces when moving, but is also helpful for determining whether a vehicle will fit on a driveway or under a narrow bridge!
+
+Each sales team then has three files containing these records for all the cars, vans, and HGVs that they have possession of.
+Note that the columns of the CSV file(s) are not guaranteed to be sorted into any particular order (but all headers will be present in the files).
+
+## Vehicle Statistics
