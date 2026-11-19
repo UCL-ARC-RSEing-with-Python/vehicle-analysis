@@ -1,7 +1,29 @@
-# FOOBAR FIXME
+# Refactoring and Templating: An Iterative Process
 
-Overall plan is for us to encode our vehicles using a template pattern / method (<https://refactoring.guru/design-patterns/template-method>).
-We're also going to make use of dataclasses
+The overall plan of these tasks is to build up to describing "vehicles" using a template pattern / method (<https://refactoring.guru/design-patterns/template-method>), then write a suitable "collection" class for them which can operate on the template rather than needing to check the individual classes specifically.
+
+This will be done as an iterative process, alongside some refactoring.
+This hopefully makes the problem easy to motivate, and the `analyse_script.py` file is deliberately written verbosely to exaggerate this effect.
+The idea is to replicate how these sorts of code improvements come about naturally in software projects; typically code is written to "get it working", and once you have a proof of concept or basic structure, improvements like this can be undertaken (preferably _before_ the code-base becomes too big)!
+As such, the tasks broadly proceed in the following manner:
+
+- Identify how a single vehicle is currently represented. Also identify why the different vehicle types - and treatment thereof - causes problems with the readability and structure of the current code.
+- (In sub-groups) Create `dataclass`es to represent the three vehicle types.
+- (In sub-groups) Implement the post-processing and validation checks on these classes.
+- (In sub-groups) Have the `dataclass`es be able to compute the vehicle statistics using properties or methods.
+- Combine everyone's work and review their PRs.
+  The idea here is that they should see that each individual group has written essentially the same class, just with a few methods and numbers being different here-and-there!
+- Use the classes that were created in the script.
+  This should make the script quite a bit less verbose and a lot more readable, though there is still a ways to go.
+- Template the three `Car`, `Van`, and `HGV` classes using a new `Vehicle` class.
+  Getting them to do this "in reverse" will hopefully make the process of writing the abstract `Vehicle` class easier.
+  And it's a bit more reflective of how this might come up naturally during a refactoring phase of development.
+- Create the collection class, `Garage`, that stores multiple vehicles.
+- Implement methods on the `Garage` class that can make use of the `Vehicle` template to conduct the required tasks.
+  This removes the need for the "per-vehicle-type" logic in the `if` blocks, which also leads to much cleaner looking code.
+  It will also hopefully inspire the students to identify further simplifications that can be made (finding "the best vehicle for X" will reduce to sorting the `Garage.vehicles` using the relevant method from the `Vehicle` class, for example).
+
+It might be worth noting that our approach via classes for the objects might not always be the best approach for large, tabular datasets - there will be some aspects where the tabular structure of the data is a superior way to represent the information than having collections of individual objects.
 
 ## Step 0: How is a single vehicle represented in the code?
 
@@ -98,11 +120,7 @@ Does the script read any better, and is it any easier to follow?
 Once you have made the necessary changes, do a quick self-review of your work.
 If you're happy, merge everything back into `main`!
 
-> [!NOTE]
-> The tasks can split into streams here.
-> One stream can implement the template pattern on the various vehicle classes, whilst the other can work on refactoring the remaining code into the `Garage` class.
-
-## Step 6A: Templating the vehicle classes
+## Step 6: Templating the vehicle classes
 
 If you look at the `Car`, `Van`, and `HGV` classes you have created, you're probably going to spot that they all look very similar!
 
@@ -179,10 +197,60 @@ In our case;
         # What do we do here?
   ```
 
-## Step 6B: Create the `Garage`
+## Step 7: Create the `Garage`
 
-- Step 4: Implement a `Garage` class to help with loading the data.
-  - `Garage` instance starts off without any cars in it
-  - Has 3 methods for "adding" vehicles that are loaded from the csv files (`load_cars`, `load_vans`, etc). Note that this can actually be generalised to `load(veh_class, **info)`...
-  - Provide methods for finding the fastest & most expensive cars, based on the script. (Again this can be generalised to `find_best_by_key(key="price")` etc)
-  - Can add the `forecast_net_worth` function to the class too, refactor it to take the start date, end date, frequency, and whether or not to save! Return the figure created!
+We also need to create a `Garage` class to help with loading and analysing the vehicle information.
+The `Garage` class is used to describe a collection of vehicles, to complement the `Car`, `Van`, and `HGV` classes which describe a single vehicle (of the respective type).
+Because we know that all our vehicle classes template the `Vehicle` class, we can write our `Garage` class assuming that all the objects we're storing are `Vehicle`s, and thus can use all of the methods, attributes, and properties defined on the `Vehicle` class in the `Garage` class methods (without worrying what the actual type of each particular vehicle is).
+
+Create the `garage.py` file and the `Garage` class:
+
+```python
+from vehicle import Vehicle
+
+class Garage:
+    vehicles: list[Vehicle]
+
+    def __init__(
+      self,
+      car_file: Path | None = None,
+      van_file: Path | None = None,
+      hgv_file: Path | None = None,
+    ) -> None:
+        ...
+```
+
+Write a suitable `__init__` method for the `Garage` class, which uses the above signature, and is inspired by the code in `analyse_vehicles.py`.
+The `Garage.vehicles` attribute is intended to store the same information as the `vehicles` list in `analyse_vehicles.py`.
+
+## Step 8: Refactor the script computations into `Garage` methods
+
+`analyse_vehicles.py` is currently calculating three things from the vehicle list:
+
+- The most valuable vehicle at a given point in time.
+- The vehicle with the greatest top speed.
+- The total net worth, forecast over time, of all the vehicles.
+
+Working together or in small groups, design suitable methods for the `Garage` class to perform these calculations.
+You may want to use the existing code in `analyse_vehicles.py` as inspiration to get started, but you might also find that there are more efficient ways to write these methods once you've worked on them for a bit.
+Additionally, don't forget that we know everything in `Garage.vehicles` is going to be a `Vehicle`, which means you can make use of the attributes and methods which are attached to that class...
+
+As you go, be sure to update the relevant parts of `analyse_vehicles.py` so that it uses the `Garage` class rather than it's current `vehicles` list.
+Do you even need to import the other classes (`Car`, `Van`, `HGV`) into the script any more?
+
+<details>
+<summary>Some hints for `Garage` methods</summary>
+Consider creating the following methods:
+
+- `most_valuable_vehicle(self, at_date: datetime) -> Vehicle`
+- `fastest_vehicle(self) -> Vehicle`
+- `forecast_net_worth(self, date_range: list[datetime]) -> plt.Figure`
+
+</details>
+
+<details>
+<summary>Hints for simplifications</summary>
+
+Finding the fastest vehicle or the most valuable vehicle can be done by sorting all the `Garage.vehicles` into order by either their top speed or current price (respectively), and then taking the first entry.
+Python's `sorted` function [just so happens to take a special `key` argument too](https://www.w3schools.com/python/ref_func_sorted.asp), which can be used to determine how sorting should take place... if only our vehicles came with something to help us compute their top speeds / current value.
+</details>
