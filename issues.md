@@ -224,6 +224,8 @@ class Garage:
 Write a suitable `__init__` method for the `Garage` class, which uses the above signature, and is inspired by the code in `analyse_vehicles.py`.
 The `Garage.vehicles` attribute is intended to store the same information as the `vehicles` list in `analyse_vehicles.py`.
 
+Then, modify the `analyse_vehicles.py` script so that - rather than the local `vehicles` variable - it creates a `Garage` instance and makes use of the `Garage.vehicles` list instead.
+
 ## Step 8: Refactor the script computations into `Garage` methods
 
 `analyse_vehicles.py` is currently calculating three things from the vehicle list:
@@ -245,7 +247,7 @@ Consider creating the following methods:
 
 - `most_valuable_vehicle(self, at_date: datetime) -> Vehicle`
 - `fastest_vehicle(self) -> Vehicle`
-- `forecast_net_worth(self, date_range: list[datetime]) -> plt.Figure`
+- `forecast_net_worth(self, date_range: list[datetime], save: Path | None = None) -> plt.Figure`
 
 </details>
 
@@ -254,4 +256,6 @@ Consider creating the following methods:
 
 Finding the fastest vehicle or the most valuable vehicle can be done by sorting all the `Garage.vehicles` into order by either their top speed or current price (respectively), and then taking the first entry.
 Python's `sorted` function [just so happens to take a special `key` argument too](https://www.w3schools.com/python/ref_func_sorted.asp), which can be used to determine how sorting should take place... if only our vehicles came with something to help us compute their top speeds / current value.
+
+In a similar vein, both the `max` and `min` functions in Python also allow you to specify a `key` by which to do the initial sorting...
 </details>
