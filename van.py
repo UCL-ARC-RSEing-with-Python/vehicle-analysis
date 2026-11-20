@@ -1,6 +1,9 @@
 from dataclasses import dataclass
 from datetime import datetime
 
+MS_TO_MPH = 2.23694
+DENSITY_AIR = 1.225
+
 
 @dataclass
 class Van:
@@ -22,6 +25,13 @@ class Van:
     rrp: float
     x_section: float
 
+    @property
+    def top_speed(self) -> float:
+        """Top speed of the vehicle in miles per hour (mph)."""
+        return MS_TO_MPH * (
+            2.0 * self.power / DENSITY_AIR / self.c_drag / self.x_section
+        ) ** (1.0 / 3.0)
+
     def __post_init__(self) -> None:
         """Run validation checks on the information provided to the instance.
 
@@ -39,3 +49,9 @@ class Van:
             raise ValueError(
                 f"X-section outside acceptable range (2.5 <= {self.x_section}! <= 4.0)"
             )
+
+    def value_on(self, date: datetime) -> float:
+        """The estimated value of the vehicle on the given `date`."""
+        td = date - self.manufacture_date
+        yrs = td.total_seconds() / (60 * 60 * 24 * 365)
+        return self.rrp / (1.6**yrs)
