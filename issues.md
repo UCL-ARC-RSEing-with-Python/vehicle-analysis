@@ -259,3 +259,76 @@ Python's `sorted` function [just so happens to take a special `key` argument too
 
 In a similar vein, both the `max` and `min` functions in Python also allow you to specify a `key` by which to do the initial sorting...
 </details>
+
+## Stretch Goals
+
+If you finish all the above tasks and are itching for more, think about what else you can do to organise the code-base.
+In particular;
+
+- You could attempt to organise the code into a package or a more package-like structure.
+  The `garage`, `vehicle`, `car`, `van`, and `hgv` modules would all be part of this package, whilst the `analyse_vehicles.py` file would be a script that might live in another directory.
+  You might also want to re-organise the various vehicle classes into their own submodule, that exposes the "specific" vehicle classes at module level:
+
+  ```bash
+  package_name/
+      garage.py
+      vehicles/
+          __init__.py # From which you can import the Car, HGV, and Van classes
+          base.py # Containing the Vehicle template class
+          car.py
+          hgv.py
+          van.py
+  ```
+
+  This file-structure is used to ensure that everything "to do" with vehicles is stored in one place.
+  The `Car`, `HGV`, and `Van` classes being exposed at module level is an implicit way of telling a user "here are the three classes you actually want to use" - we don't tell the user about `Vehicle` because it's a template class that we're using to structure our code.
+  However, a developer who is adding a new vehicle type will expect to find the `Vehicle` template somewhere "close to" the classes that use that template (note that `template.py` might also be used in place of `base.py` for this reason).
+- You could write a proper command-line interface for the `analyse_vehicles.py` script.
+  It would need to take several arguments;
+  - The car, van, and hgv files to load (note that not all 3 may be provided)!
+  - The "start date" on which to compute the most expensive car & fastest car.
+    It should default to the current day.
+  - The frequency and end-date for which to forecast prices to.
+    Note that the "start date" used above is taken to be the start of the date range to forecast over.
+    Coding up how the frequency is specified might be tricky, and require some careful planning!
+- The current way that `Vehicle`s are displayed when you print them via `print` is helpful, but not well-formatted.
+  Can you figure out how to override this and display the information in a custom manner?
+  > [!TIP]
+  > Take a look at the `__str__` and `__repr__` methods for classes.
+- Decide what to do with the `generate_data.py` script.
+  Do you want to add it's functionality to your package, maybe as an entry point / command-line tool?
+  If so, what inputs should it take?
+  Or do you want to leave it as a standalone script?
+- `Garage`s can be loaded from data files, but we have not written any functionality for _saving_ the vehicles in the garage back to `.csv` files!
+  Think about how you might add this - remember that you'll need to create (up to) 3 files when saving a `Garage`.
+  You also might want to start by thinking about how you would convert a single `Vehicle` into a format that corresponds to a single row in the resulting `.csv` file...
+- In the same vein as the above, `Garage`s can only be loaded from files right now, but a user might want to create their own "custom" `Garage` to explore some hypothetical situations.
+  As such, modify the `Garage` class to add a `from_files` method, and an `__init__` method that accepts a variable number of `Vehicle`s as it's input;
+
+  ```python
+  from collections.abc import Iterable
+
+  class Garage:
+      ...
+
+      @classmethod
+      def from_files(
+          cls,
+          car_files: Iterable[Path] = (),
+          van_files: Iterable[Path] = (),
+          hgv_files: Iterable[Path] = (),
+      ) -> Garage:
+          ...
+          # Create the Garage by including all the vehicles from
+          # all the files that are provided. Note that multiple
+          # files of each vehicle type can be provided!
+
+          # Once you assemble all the Vehicles you need, you can
+          # return cls(*vehicles) to call the normal __init__
+          # method and build a Garage instance.
+
+      def __init__(self, *vehicles: Vehicle) -> None:
+        """Create a new `Garage` by passing in the `Vehicles` it contains."""
+
+        self.vehicles = list(vehicles)
+  ```
