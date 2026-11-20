@@ -91,14 +91,15 @@ Still within your groups of 3, on your separate branches, add methods and proper
       # Calculate and return top speed in mph
   ```
 
-- The `current_value` of a vehicle will need to be a method on your class, that takes the date at which the valuation takes place as an input.
+- The `value_on` of a vehicle will need to be a method on your class, that takes the date at which the valuation takes place as an input.
   
   ```python
   class Car/Van/HGV:
     ...
 
-    def current_value(self, date_of_valuation: datetime) -> float:
-      # Calculate the vehicle's current valuation.
+    def value_on(self, date: datetime) -> float:
+      # Calculate the vehicle's estimated value on the given date.
+  ```
 
 ## Step 4: Review your group-mates' work
 
@@ -148,7 +149,7 @@ class Vehicle(ABC):
     ...
 
   @abstractmethod
-  def current_value(self, valuation_date: datetime) -> float:
+  def value_on(self, valuation_date: datetime) -> float:
     ...
 ```
 
@@ -167,7 +168,7 @@ In our case;
   > You might need to implement their `__post_init__` methods though!
 - The `top_speed` is calculated in the same way for all three vehicle types.
   This means that we can implement it on the `Vehicle` class once, to save implementing it separately on the `Car`, `Van`, and `HGV` classes.
-- The `current_value` method is subclass-specific.
+- The `value_on` method is subclass-specific.
   Although it takes the same inputs (and returns the same output type) for each vehicle type, the actual calculation is different.
   As such, it needs to be specified as an `abstractmethod` on the `Vehicle` class, but the implementation needs to be left blank (this is what the `...`s in the code sample above do).
   `current_valuation` then needs to be implemented on each of the specific classes.
