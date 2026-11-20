@@ -6,6 +6,7 @@ import numpy as np
 import pandas as pd
 
 DATA_DIR = Path(__file__).parent / "data"
+MS_TO_MPH = 2.23694
 
 if __name__ == "__main__":
     # Load the data about cars in the Garage...
@@ -26,11 +27,11 @@ if __name__ == "__main__":
     vehicles = []
     for car in cars:
         veh_type = "car"
-        car["plate"] = str(car["plate"]).upper()
-        if not all(char.isalnum() for char in car["plate"]):
-            raise ValueError(f"Plate is non-alphanumeric: {car['plate']}")
-        if len(car["plate"]) != 7:
-            raise ValueError(f"Car plate is not 7-digits long: {car['plate']}")
+        car["Plate"] = str(car["Plate"]).upper()
+        if not all(char.isalnum() for char in car["Plate"]):
+            raise ValueError(f"Plate is non-alphanumeric: {car['Plate']}")
+        if len(car["Plate"]) != 7:
+            raise ValueError(f"Car Plate is not 7-digits long: {car['Plate']}")
         x_section = car["Cross Section"]
         if not (2.0 <= x_section <= 2.4):
             raise ValueError(
@@ -39,11 +40,11 @@ if __name__ == "__main__":
         vehicles.append({"type": "car", **car})
     for van in vans:
         veh_type = "van"
-        van["plate"] = str(van["plate"]).upper()
-        if not all(char.isalnum() for char in van["plate"]):
-            raise ValueError(f"Plate is non-alphanumeric: {van['plate']}")
-        if len(van["plate"]) != 7:
-            raise ValueError(f"Van plate is not 7-digits long: {van['plate']}")
+        van["Plate"] = str(van["Plate"]).upper()
+        if not all(char.isalnum() for char in van["Plate"]):
+            raise ValueError(f"Plate is non-alphanumeric: {van['Plate']}")
+        if len(van["Plate"]) != 7:
+            raise ValueError(f"Van Plate is not 7-digits long: {van['Plate']}")
         x_section = van["Cross Section"]
         if not (2.5 <= x_section <= 4.5):
             raise ValueError(
@@ -52,11 +53,11 @@ if __name__ == "__main__":
         vehicles.append({"type": "van", **van})
     for hgv in hgvs:
         veh_type = "hgv"
-        hgv["plate"] = str(hgv["plate"]).upper()
-        if not all(char.isalnum() for char in hgv["plate"]):
-            raise ValueError(f"Plate is non-alphanumeric: {van['plate']}")
-        if len(hgv["plate"]) != 4:
-            raise ValueError(f"HGV plate is not 4-digits long: {van['plate']}")
+        hgv["Plate"] = str(hgv["Plate"]).upper()
+        if not all(char.isalnum() for char in hgv["Plate"]):
+            raise ValueError(f"Plate is non-alphanumeric: {van['Plate']}")
+        if len(hgv["Plate"]) != 4:
+            raise ValueError(f"HGV Plate is not 4-digits long: {van['Plate']}")
         x_section = hgv["Cross Section"]
         if not (9.0 <= x_section <= 10.0):
             raise ValueError(
@@ -100,26 +101,26 @@ if __name__ == "__main__":
     # Find the vehicle with the highest theoretical top speed
     fastest = vehicles[0]
     density_of_air = 1.225  # kg m^-3
-    highest_ts = (
+    highest_ts = MS_TO_MPH * (
         2.0
         * fastest["Engine Power"]
         / density_of_air
         / fastest["Drag Coefficient"]
         / fastest["Cross Section"]
-    )
+    ) ** (1.0 / 3.0)
     for v in vehicles:
-        ts = (
+        ts = MS_TO_MPH * (
             2.0
             * v["Engine Power"]
             / density_of_air
             / v["Drag Coefficient"]
             / v["Cross Section"]
-        )
+        ) ** (1.0 / 3.0)
         if ts > highest_ts:
             fastest = v
             highest_ts = ts
 
-    print("Fastest vehicle is", fastest, "with top speed", highest_ts)
+    print("Fastest vehicle is", fastest, "with top speed", highest_ts, "mph")
 
     # Forecast the net worth of all vehicles over time
     forecast_until = datetime(year=2030, month=1, day=1)

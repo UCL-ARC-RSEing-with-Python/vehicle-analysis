@@ -18,7 +18,7 @@ All vehicles that are manufactured come with the following information (the text
 - The date that assembly of the vehicle was completed (`"Manufacture Date"`).
   This is given as a date in `YYYY-MM-DD` format, though is string-valued inside the CSV file.
 - The power that the vehicle's engine can generate (`"Engine Power"`), which in turn affects it's top speed and acceleration.
-  This value is given in units of $\mathrm{kg} \ \mathrm{m}^2 \mathrm{s}^3$.
+  This value is given in units of $\mathrm{kg} \ \mathrm{m}^2 \mathrm{s}^3$ [("Watts")](https://en.wikipedia.org/wiki/Watt).
 - The vehicle's Drag Coefficient (`"c_drag"`).
   This is a dimensionless number (a value that doesn't have any units) that appears in various mechanics-related calculations, broadly quantifying how much air resistance and other drag forces affect the vehicle.
   A higher value corresponds to a greater slowdown effect due to drag.
@@ -46,6 +46,10 @@ where
 - $C_{\mathrm{drag}}$ is the vehicle's Drag Coefficient,
 - $A$ is the vehicle's front-facing cross-section.
 
+> [!NOTE]
+> The speed $v$ will be given in $\mathrm{m}\mathrm{s}^{-1}$.
+> To convert it to miles per hour $(\mathrm{mph})$, you can use the conversion of $1\mathrm{m}\mathrm{s}^{-1} \approx 2.23694 \mathrm{mph}$.
+
 ### Current Valuation
 
 Vehicle value degrades rapidly over time, however not all types of vehicle have the same rate of devaluation.
@@ -61,3 +65,8 @@ then the current value $V$ (in £1000) of each type of vehicle can be estimated 
 - For vans; $V = R \times 1.6^{-t} = \frac{R}{1.6^t}$. Vans degrade in the same manner as cars, but at a slower rate (only loosing $\approx\frac{3}{5}$ of their value each year).
 - For HGVs; $V = \frac{R}{1 + 2t^2}$.
   HGVs rapidly loose value due to the intensity of the work they need to conduct, and changing supply chain demands.
+
+## Data Generation
+
+You can run the `generate_csv_files.py` to generate some sample data to work with.
+This will populate the `data/` directory with three files; one each for cars, vans, and hgvs.

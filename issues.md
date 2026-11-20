@@ -88,7 +88,7 @@ Still within your groups of 3, on your separate branches, add methods and proper
 
     @property
     def top_speed(self) -> float:
-      # Calculate and return top speed
+      # Calculate and return top speed in mph
   ```
 
 - The `current_value` of a vehicle will need to be a method on your class, that takes the date at which the valuation takes place as an input.
