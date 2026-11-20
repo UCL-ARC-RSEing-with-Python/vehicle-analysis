@@ -1,7 +1,6 @@
 from datetime import datetime, timedelta
 from pathlib import Path
 
-import matplotlib.pyplot as plt
 import numpy as np
 
 from garage import Garage
@@ -17,32 +16,24 @@ if __name__ == "__main__":
     garage = Garage(car_file=car_file, van_file=van_file, hgv_file=hgv_file)
 
     # Find the most valuable vehicle at a given point in time
-    t = datetime.now()  # using today as an example, but could be any date
-
-    # Optional: what would happen if there are no vehicles?
-    mvv = garage.vehicles[0]
-    highest_p = mvv.value_on(t)
-    for v in garage.vehicles:
-        # Work out how much the vehicle has degraded in value since manufacture,
-        # and then check if it's still worth more than the current most valuable
-        # vehicle found
-        p = v.value_on(t)
-        if p > highest_p:
-            mmv = v
-            highest_p = p
-
-    print("Most valuable vehicle is currently", mmv, "at effective price", highest_p)
+    today = datetime.now()  # using today as an example, but could be any date
+    most_valuable_vehicle = garage.most_valuable_vehicle(today)
+    print(
+        "Most valuable vehicle is currently",
+        most_valuable_vehicle,
+        "at effective price",
+        most_valuable_vehicle.value_on(today),
+    )
 
     # Find the vehicle with the highest theoretical top speed
-    fastest = garage.vehicles[0]
-    highest_ts = fastest.top_speed
-    for v in garage.vehicles:
-        ts = v.top_speed
-        if ts > highest_ts:
-            fastest = v
-            highest_ts = ts
-
-    print("Fastest vehicle is", fastest, "with top speed", highest_ts, "mph")
+    fastest_vehicle = garage.fastest_vehicle()
+    print(
+        "Fastest vehicle is",
+        fastest_vehicle,
+        "with top speed",
+        fastest_vehicle.top_speed,
+        "mph",
+    )
 
     # Forecast the net worth of all vehicles over time
     forecast_until = datetime(year=2030, month=1, day=1)
@@ -53,18 +44,7 @@ if __name__ == "__main__":
     )
     forecast_dates = [forecast_start + i * forecast_frequency for i in range(n_dates)]
 
-    total_veh_values = []
-    for date in forecast_dates:
-        total_price = 0.0
-        for v in garage.vehicles:
-            total_price += v.value_on(date)
-        total_veh_values.append(total_price)
-
-    fig, ax = plt.subplots(nrows=1, ncols=1)
-    ax.plot(forecast_dates, total_veh_values)
-    ax.tick_params(axis="x", labelrotation=-75)
-    ax.grid(visible=True)
-    ax.set_xlabel("Date")
-    ax.set_ylabel("Total Price of all Vehicles (£k)")
-    fig.tight_layout()
-    fig.savefig("./price_forecast.png")
+    forecast_fig = garage.forecast_net_worth(
+        forecast_dates, save="./price_forecast.png"
+    )
+    forecast_fig.show()

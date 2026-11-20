@@ -1,5 +1,7 @@
+from datetime import datetime
 from pathlib import Path
 
+import matplotlib.pyplot as plt
 import pandas as pd
 
 from car import Car
@@ -47,3 +49,49 @@ class Garage:
                         x_section=v["Cross Section"],
                     )
                 )
+
+    def fastest_vehicle(self) -> Vehicle:
+        """Return the vehicle with the greatest top speed."""
+        if not self.vehicles:
+            raise ValueError("Garage does not store any vehicles!")
+
+        return max(self.vehicles, key=lambda v: v.top_speed)
+
+    def forecast_net_worth(
+        self, date_range: list[datetime], save: Path | None = None
+    ) -> plt.Figure:
+        """Forecast net worth of all vehicles in the `Garage` over the given dates.
+
+        Args:
+            date_range:
+                List of `datetime` objects, at which to forecast total worth of all vehicles.
+            save:
+                Path to save the generated figure to, if desired.
+
+        Returns:
+            plt.Figure:
+                Forecast plot.
+        """
+        net_worth = [0.0 for _ in range(len(date_range))]
+        for i, date in enumerate(date_range):
+            for v in self.vehicles:
+                net_worth[i] += v.value_on(date)
+
+        fig, ax = plt.subplots(nrows=1, ncols=1)
+        ax.plot(date_range, net_worth)
+        ax.tick_params(axis="x", labelrotation=-75)
+        ax.grid(visible=True)
+        ax.set_xlabel("Date")
+        ax.set_ylabel("Total Price of all Vehicles (£k)")
+        fig.tight_layout()
+
+        if save is not None:
+            fig.savefig(save)
+        return fig
+
+    def most_valuable_vehicle(self, on_date: datetime) -> Vehicle:
+        """Return the most valuable vehicle by estimated cost, on the given date."""
+        if not self.vehicles:
+            raise ValueError("Garage does not store any vehicles!")
+
+        return max(self.vehicles, key=lambda v: v.value_on(on_date))
