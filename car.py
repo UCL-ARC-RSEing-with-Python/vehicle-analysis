@@ -21,3 +21,21 @@ class Car:
     power: float
     rrp: float
     x_section: float
+
+    def __post_init__(self) -> None:
+        """Run validation checks on the information provided to the instance.
+
+        - Plates are automatically converted to uppercase.
+        - Plates are checked to only contain valid characters, and be of correct length.
+        - Cross-sections are checked to be within reasonable guidelines.
+        """
+        self.plate = str(self.plate).upper()
+        if not self.plate.isalnum():
+            raise ValueError(f"Plate is non-alphanumeric: {self.plate}")
+        if len(self.plate) != 7:
+            raise ValueError(f"Car Plate is not 7-digits long: {self.plate}")
+
+        if not (2.0 <= self.x_section <= 2.4):
+            raise ValueError(
+                f"X-section outside acceptable range (2.0 <= {self.x_section}! <= 2.4)"
+            )
