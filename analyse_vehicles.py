@@ -31,7 +31,7 @@ if __name__ == "__main__":
             raise ValueError(f"Plate is non-alphanumeric: {car['plate']}")
         if len(car["plate"]) != 7:
             raise ValueError(f"Car plate is not 7-digits long: {car['plate']}")
-        x_section = car["Cross Section (m^2)"]
+        x_section = car["Cross Section"]
         if not (2.0 <= x_section <= 2.4):
             raise ValueError(
                 f"X-section outside acceptable range (2.0 <= {x_section}! <= 2.4)"
@@ -44,7 +44,7 @@ if __name__ == "__main__":
             raise ValueError(f"Plate is non-alphanumeric: {van['plate']}")
         if len(van["plate"]) != 7:
             raise ValueError(f"Van plate is not 7-digits long: {van['plate']}")
-        x_section = van["Cross Section (m^2)"]
+        x_section = van["Cross Section"]
         if not (2.5 <= x_section <= 4.5):
             raise ValueError(
                 f"X-section outside acceptable range (2.5 <= {x_section}! <= 4.0)"
@@ -57,7 +57,7 @@ if __name__ == "__main__":
             raise ValueError(f"Plate is non-alphanumeric: {van['plate']}")
         if len(hgv["plate"]) != 4:
             raise ValueError(f"HGV plate is not 4-digits long: {van['plate']}")
-        x_section = hgv["Cross Section (m^2)"]
+        x_section = hgv["Cross Section"]
         if not (9.0 <= x_section <= 10.0):
             raise ValueError(
                 f"X-section outside acceptable range (9.0 <= {x_section}! <= 10.0)"
@@ -72,11 +72,11 @@ if __name__ == "__main__":
     td: timedelta = t - mvv["Manufacture Date"]
     yrs = td.total_seconds() / (60 * 60 * 24 * 365)
     if mvv["type"] == "car":
-        highest_p = mvv["RRP (£k)"] / (2**yrs)
+        highest_p = mvv["RRP"] / (2**yrs)
     elif mvv["type"] == "van":
-        highest_p = mvv["RRP (£k)"] / (1.6**yrs)
+        highest_p = mvv["RRP"] / (1.6**yrs)
     else:
-        highest_p = mvv["RRP (£k)"] / (1.0 + 2.0 * yrs**2)
+        highest_p = mvv["RRP"] / (1.0 + 2.0 * yrs**2)
     for v in vehicles:
         # Work out how much the vehicle has degraded in value since manufacture,
         # and then check if it's still worth more than the current most valuable
@@ -85,11 +85,11 @@ if __name__ == "__main__":
         yrs = td.total_seconds() / (60 * 60 * 24 * 365)
 
         if v["type"] == "car":
-            p = v["RRP (£k)"] / (2**yrs)
+            p = v["RRP"] / (2**yrs)
         elif v["type"] == "van":
-            p = v["RRP (£k)"] / (1.6**yrs)
+            p = v["RRP"] / (1.6**yrs)
         else:
-            p = v["RRP (£k)"] / (1.0 + 2.0 ** (yrs**2))
+            p = v["RRP"] / (1.0 + 2.0 ** (yrs**2))
 
         if p > highest_p:
             mmv = v
@@ -102,18 +102,18 @@ if __name__ == "__main__":
     density_of_air = 1.225  # kg m^-3
     highest_ts = (
         2.0
-        * fastest["Engine Power (kg m^2 / s^3)"]
+        * fastest["Engine Power"]
         / density_of_air
         / fastest["Drag Coefficient"]
-        / fastest["Cross Section (m^2)"]
+        / fastest["Cross Section"]
     )
     for v in vehicles:
         ts = (
             2.0
-            * v["Engine Power (kg m^2 / s^3)"]
+            * v["Engine Power"]
             / density_of_air
             / v["Drag Coefficient"]
-            / v["Cross Section (m^2)"]
+            / v["Cross Section"]
         )
         if ts > highest_ts:
             fastest = v
@@ -137,11 +137,11 @@ if __name__ == "__main__":
             td: timedelta = date - v["Manufacture Date"]
             yrs = td.total_seconds() / (60 * 60 * 24 * 365)
             if v["type"] == "car":
-                total_price += v["RRP (£k)"] / (2**yrs)
+                total_price += v["RRP"] / (2**yrs)
             elif v["type"] == "van":
-                total_price += v["RRP (£k)"] / (1.6**yrs)
+                total_price += v["RRP"] / (1.6**yrs)
             else:
-                total_price += v["RRP (£k)"] / (1.0 + 2.0 ** (yrs**2))
+                total_price += v["RRP"] / (1.0 + 2.0 ** (yrs**2))
         total_veh_values.append(total_price)
 
     fig, ax = plt.subplots(nrows=1, ncols=1)
