@@ -46,7 +46,7 @@ if __name__ == "__main__":
         if len(van["Plate"]) != 7:
             raise ValueError(f"Van Plate is not 7-digits long: {van['Plate']}")
         x_section = van["Cross Section"]
-        if not (2.5 <= x_section <= 4.5):
+        if not (2.5 <= x_section <= 4.0):
             raise ValueError(
                 f"X-section outside acceptable range (2.5 <= {x_section}! <= 4.0)"
             )
