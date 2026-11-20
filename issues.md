@@ -171,7 +171,7 @@ In our case;
 - The `value_on` method is subclass-specific.
   Although it takes the same inputs (and returns the same output type) for each vehicle type, the actual calculation is different.
   As such, it needs to be specified as an `abstractmethod` on the `Vehicle` class, but the implementation needs to be left blank (this is what the `...`s in the code sample above do).
-  `current_valuation` then needs to be implemented on each of the specific classes.
+  `value_on` then needs to be implemented on each of the specific classes.
 - The `__post_init__` method might seem sub-class specific at first, and you could certainly implement it in this way.
   However, you could also implement `__post_init__` on the `Vehicle` class, and use abstract properties to fill in the blanks.
   Consider, for example, if you can make use of the following suggestion:
