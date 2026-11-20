@@ -3,14 +3,10 @@ from pathlib import Path
 
 import matplotlib.pyplot as plt
 import numpy as np
-import pandas as pd
 
-from car import Car
-from hgv import HGV
-from van import Van
+from garage import Garage
 
 DATA_DIR = Path(__file__).parent / "data"
-MS_TO_MPH = 2.23694
 
 if __name__ == "__main__":
     # Load the data about cars in the Garage...
@@ -18,58 +14,15 @@ if __name__ == "__main__":
     van_file = DATA_DIR / "vans.csv"
     hgv_file = DATA_DIR / "hgvs.csv"
 
-    cars = pd.read_csv(car_file, parse_dates=["Manufacture Date"]).to_dict(
-        orient="records"
-    )
-    vans = pd.read_csv(van_file, parse_dates=["Manufacture Date"]).to_dict(
-        orient="records"
-    )
-    hgvs = pd.read_csv(hgv_file, parse_dates=["Manufacture Date"]).to_dict(
-        orient="records"
-    )
-
-    vehicles: list[Car | Van | HGV] = []
-    for car in cars:
-        vehicles.append(
-            Car(
-                c_drag=car["Drag Coefficient"],
-                manufacture_date=car["Manufacture Date"],
-                plate=car["Plate"],
-                power=car["Engine Power"],
-                rrp=car["RRP"],
-                x_section=car["Cross Section"],
-            )
-        )
-    for van in vans:
-        vehicles.append(
-            Van(
-                c_drag=van["Drag Coefficient"],
-                manufacture_date=van["Manufacture Date"],
-                plate=van["Plate"],
-                power=van["Engine Power"],
-                rrp=van["RRP"],
-                x_section=van["Cross Section"],
-            )
-        )
-    for hgv in hgvs:
-        vehicles.append(
-            HGV(
-                c_drag=hgv["Drag Coefficient"],
-                manufacture_date=hgv["Manufacture Date"],
-                plate=hgv["Plate"],
-                power=hgv["Engine Power"],
-                rrp=hgv["RRP"],
-                x_section=hgv["Cross Section"],
-            )
-        )
+    garage = Garage(car_file=car_file, van_file=van_file, hgv_file=hgv_file)
 
     # Find the most valuable vehicle at a given point in time
     t = datetime.now()  # using today as an example, but could be any date
 
     # Optional: what would happen if there are no vehicles?
-    mvv = vehicles[0]
+    mvv = garage.vehicles[0]
     highest_p = mvv.value_on(t)
-    for v in vehicles:
+    for v in garage.vehicles:
         # Work out how much the vehicle has degraded in value since manufacture,
         # and then check if it's still worth more than the current most valuable
         # vehicle found
@@ -81,9 +34,9 @@ if __name__ == "__main__":
     print("Most valuable vehicle is currently", mmv, "at effective price", highest_p)
 
     # Find the vehicle with the highest theoretical top speed
-    fastest = vehicles[0]
+    fastest = garage.vehicles[0]
     highest_ts = fastest.top_speed
-    for v in vehicles:
+    for v in garage.vehicles:
         ts = v.top_speed
         if ts > highest_ts:
             fastest = v
@@ -103,7 +56,7 @@ if __name__ == "__main__":
     total_veh_values = []
     for date in forecast_dates:
         total_price = 0.0
-        for v in vehicles:
+        for v in garage.vehicles:
             total_price += v.value_on(date)
         total_veh_values.append(total_price)
 
