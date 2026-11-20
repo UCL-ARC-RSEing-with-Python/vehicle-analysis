@@ -64,7 +64,7 @@ then the current value $V$ (in £1000) of each type of vehicle can be estimated 
   Essentially, a car looses half it's value for every full year since it's assembly.
 - For vans; $V = R \times 1.6^{-t} = \frac{R}{1.6^t}$. Vans degrade in the same manner as cars, but at a slower rate (only loosing $\approx\frac{3}{5}$ of their value each year).
 - For HGVs; $V = \frac{R}{1 + 2t^2}$.
-  HGVs rapidly loose value due to the intensity of the work they need to conduct, and changing supply chain demands.
+  HGVs rapidly loose value due to the intensity of the work they need to conduct, but are more stable over longer-time periods.
 
 ## Data Generation
 
